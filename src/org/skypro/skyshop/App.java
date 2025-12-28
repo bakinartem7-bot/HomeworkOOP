@@ -1,5 +1,4 @@
-import org.skypro.skyshop.Product;
-import org.skypro.skyshop.ProductBasket;
+package org.skypro.skyshop;
 
 public class App {
     public static void main(String[] args) {
