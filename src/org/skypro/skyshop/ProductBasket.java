@@ -10,7 +10,8 @@ public class ProductBasket {
             System.out.println("Невозможно добавить продукт.");
             return;
         }
-        items[count++] = product;
+        items[count] = product;
+        count++;
     }
 
     public int getTotalCost() {
@@ -50,6 +51,9 @@ public class ProductBasket {
     }
 
     public void clear() {
+        for (int i = 0; i < count; i++) {
+            items[i] = null;
+        }
         count = 0;
     }
 }
