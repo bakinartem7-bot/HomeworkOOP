@@ -9,6 +9,12 @@ public class App {
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
         }
+    public static void main (String[] args) {
+        Product apple = new SimpleProduct("Яблоко", 150);
+        Product banana = new DiscountedProduct("Банан", 200, 25);
+        Product pear = new FixPriceProduct("Груша");
+        Product strawberry = new SimpleProduct("Клубника", 120);
+        Product water = new DiscountedProduct("Вода", 50, 10);
 
         try {
             Product zeroPrice = new SimpleProduct("Яблоко", 0);
@@ -97,5 +103,15 @@ public class App {
         } catch (BestResultNotFound e) {
             System.out.println("Ошибка поиска: " + e.getMessage());
         }
+
+        basket.printContents();
+
+        System.out.println("Общая стоимость: " + basket.getTotalCost() + " руб.");
+        System.out.println("Есть ли яблоко в корзине? " + basket.hasProduct("Яблоко"));
+        System.out.println("Есть ли банан в корзине? " + basket.hasProduct("Банан"));
+
+        basket.clear();
+        basket.printContents();
+        System.out.println("Стоимость пустой корзины: " + basket.getTotalCost() + " руб.");
     }
 }

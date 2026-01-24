@@ -16,6 +16,9 @@ public class SimpleProduct extends Product {
         return price;
     }
 
+    int getPrice() {
+        return price;
+    }
     @Override
     public String toString() {
         return getProductName() + ": " + getPrice();
