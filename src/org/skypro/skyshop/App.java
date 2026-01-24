@@ -4,6 +4,34 @@ import java.util.Arrays;
 
 public class App {
     public static void main(String[] args) {
+        System.out.println("=== 1. Проверка некорректных данных при создании объектов ===\n");
+
+        try {
+            Product invalidName = new SimpleProduct("   ", 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Product zeroPrice = new SimpleProduct("Яблоко", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Product negativeDiscount = new DiscountedProduct("Банан", 200, -5);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Product overDiscount = new DiscountedProduct("Груша", 150, 110);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        System.out.println("\n=== 2. Создание корректных объектов ===\n");
+
         Product apple = new SimpleProduct("Яблоко", 150);
         Product banana = new DiscountedProduct("Банан", 200, 25);
         Product pear = new FixPriceProduct("Груша");
@@ -14,6 +42,11 @@ public class App {
         Article article2 = new Article("Польза бананов", "Бананы содержат калий и витамины.");
         Article article3 = new Article("Секреты выращивания клубники", "Как получить богатый урожай клубники.");
 
+        System.out.println("Созданы продукты и статьи.\n");
+
+        System.out.println("=== 3. Работа с корзиной товаров ===\n");
+
+
         ProductBasket basket = new ProductBasket();
         basket.addProduct(apple);
         basket.addProduct(banana);
@@ -21,6 +54,8 @@ public class App {
         basket.addProduct(strawberry);
         basket.addProduct(water);
         basket.printContents();
+
+        System.out.println("\n=== 4. Настройка поискового движка ===\n");
 
         SearchEngine searchEngine = new SearchEngine(10);
         searchEngine.add(apple);
@@ -32,16 +67,46 @@ public class App {
         searchEngine.add(article2);
         searchEngine.add(article3);
 
+        System.out.println("Объекты добавлены в поисковый движок.\n");
+
+        System.out.println("=== 5. Поиск по ключевым словам ===\n");
+
         System.out.println("--- Поиск по запросу 'яблок':");
         System.out.println(Arrays.toString(searchEngine.search("яблок")));
 
         System.out.println("--- Поиск по запросу 'банан':");
         System.out.println(Arrays.toString(searchEngine.search("банан")));
 
+
         System.out.println("--- Поиск по запросу 'клубник':");
         System.out.println(Arrays.toString(searchEngine.search("клубник")));
 
+
         System.out.println("--- Поиск по запросу 'вода':");
         System.out.println(Arrays.toString(searchEngine.search("вода")));
+
+
+        System.out.println("\n=== 6. Поиск лучшего совпадения ===\n");
+
+        try {
+            Searchable best = searchEngine.findBestMatch("красные");
+            System.out.println("Лучший результат: " + best.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка поиска: " + e.getMessage());
+        }
+
+        try {
+            Searchable best = searchEngine.findBestMatch("экзотический");
+            System.out.println("Лучший результат: " + best.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка поиска: " + e.getMessage());
+        }
+
+        try {
+            Searchable best = searchEngine.findBestMatch("");
+            System.out.println("Лучший результат: " + best.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка поиска: " + e.getMessage());
+        }
     }
 }
