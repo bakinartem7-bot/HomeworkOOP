@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 public class App {
     public static void main(String[] args) {
-        System.out.println("=== 1. Проверка некорректных данных при создании объектов ===\n");
-
         try {
             Product invalidName = new SimpleProduct("   ", 100);
         } catch (IllegalArgumentException e) {
@@ -55,8 +53,6 @@ public class App {
         basket.addProduct(water);
         basket.printContents();
 
-        System.out.println("\n=== 4. Настройка поискового движка ===\n");
-
         SearchEngine searchEngine = new SearchEngine(10);
         searchEngine.add(apple);
         searchEngine.add(banana);
@@ -66,10 +62,6 @@ public class App {
         searchEngine.add(article1);
         searchEngine.add(article2);
         searchEngine.add(article3);
-
-        System.out.println("Объекты добавлены в поисковый движок.\n");
-
-        System.out.println("=== 5. Поиск по ключевым словам ===\n");
 
         System.out.println("--- Поиск по запросу 'яблок':");
         System.out.println(Arrays.toString(searchEngine.search("яблок")));
@@ -84,9 +76,6 @@ public class App {
 
         System.out.println("--- Поиск по запросу 'вода':");
         System.out.println(Arrays.toString(searchEngine.search("вода")));
-
-
-        System.out.println("\n=== 6. Поиск лучшего совпадения ===\n");
 
         try {
             Searchable best = searchEngine.findBestMatch("красные");
