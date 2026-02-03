@@ -5,6 +5,37 @@ import java.util.List;
 
 public class App {
     public static void main(String[] args) {
+        try {
+            Product invalidName = new SimpleProduct("   ", 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    public static void main (String[] args) {
+        Product apple = new SimpleProduct("Яблоко", 150);
+        Product banana = new DiscountedProduct("Банан", 200, 25);
+        Product pear = new FixPriceProduct("Груша");
+        Product strawberry = new SimpleProduct("Клубника", 120);
+        Product water = new DiscountedProduct("Вода", 50, 10);
+
+        try {
+            Product zeroPrice = new SimpleProduct("Яблоко", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Product negativeDiscount = new DiscountedProduct("Банан", 200, -5);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Product overDiscount = new DiscountedProduct("Груша", 150, 110);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        System.out.println("\n=== 2. Создание корректных объектов ===\n");
 
         Product apple = new SimpleProduct("Яблоко", 150);
         Product banana = new DiscountedProduct("Банан", 200, 25);
@@ -99,5 +130,15 @@ public class App {
                 System.out.println("Ошибка поиска для запроса '" + search + "': " + e.getMessage());
             }
         }
+
+        basket.printContents();
+
+        System.out.println("Общая стоимость: " + basket.getTotalCost() + " руб.");
+        System.out.println("Есть ли яблоко в корзине? " + basket.hasProduct("Яблоко"));
+        System.out.println("Есть ли банан в корзине? " + basket.hasProduct("Банан"));
+
+        basket.clear();
+        basket.printContents();
+        System.out.println("Стоимость пустой корзины: " + basket.getTotalCost() + " руб.");
     }
 }
