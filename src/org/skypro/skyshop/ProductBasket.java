@@ -1,6 +1,26 @@
 package org.skypro.skyshop;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class ProductBasket {
+    private final List<Product> items = new LinkedList<>();
+
+    public void addProduct(Product product) {
+        items.add(product);
+    }
+
+    public List<Product> removeProductsByName(String name) {
+        List<Product> removed = new LinkedList<>();
+
+        // Используем Iterator для безопасного удаления во время обхода
+        var iterator = items.iterator();
+        while (iterator.hasNext()) {
+            Product product = iterator.next();
+            if (product.getProductName().equals(name)) {
+                iterator.remove();
+                removed.add(product);
+            }
     private static final int MAX_ITEMS = 5;
     private int count = 0;
     private Product[] items = new Product[MAX_ITEMS];
@@ -10,12 +30,14 @@ public class ProductBasket {
             System.out.println("Невозможно добавить продукт.");
             return;
         }
-        items[count] = product;
-        count++;
+
+        return removed;
     }
 
     public int getTotalCost() {
         int total = 0;
+        for (Product product : items) {
+            total += product.getPrice();
         for (int i = 0; i < count; i++) {
             total += items[i].getPrice();
         }
@@ -23,6 +45,7 @@ public class ProductBasket {
     }
 
     public void printContents() {
+        if (items.isEmpty()) {
         int specialCount = 0;
 
         if (count == 0) {
@@ -37,11 +60,16 @@ public class ProductBasket {
             }
         }
 
+        for (Product product : items) {
+            System.out.println(product.getProductName() + ": " + product.getPrice());
+        }
         System.out.println("Итого: " + getTotalCost());
         System.out.println("Специальных товаров: " + specialCount);
     }
 
     public boolean hasProduct(String productName) {
+        for (Product product : items) {
+            if (product.getProductName().equals(productName)) {
         for (int i = 0; i < count; i++) {
             if (items[i].getProductName().equals(productName)) {
                 return true;
@@ -51,9 +79,6 @@ public class ProductBasket {
     }
 
     public void clear() {
-        for (int i = 0; i < count; i++) {
-            items[i] = null;
-        }
-        count = 0;
+        items.clear();
     }
 }
