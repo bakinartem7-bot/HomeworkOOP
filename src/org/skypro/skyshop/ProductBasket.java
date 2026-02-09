@@ -1,61 +1,54 @@
 package org.skypro.skyshop;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ProductBasket {
-    private final List<Product> items = new LinkedList<>();
+
+    private final Map<String, List<Product>> products = new HashMap<>();
 
     public void addProduct(Product product) {
-        items.add(product);
+        products.computeIfAbsent(product.getProductName(), k -> new ArrayList<>())
+                .add(product);
     }
 
     public List<Product> removeProductsByName(String name) {
-        List<Product> removed = new LinkedList<>();
-
-        // Используем Iterator для безопасного удаления во время обхода
-        var iterator = items.iterator();
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getProductName().equals(name)) {
-                iterator.remove();
-                removed.add(product);
-            }
-        }
-
-        return removed;
+        List<Product> removed = products.remove(name);
+        return removed != null ? removed : Collections.emptyList();
     }
 
     public int getTotalCost() {
         int total = 0;
-        for (Product product : items) {
-            total += product.getPrice();
+        for (List<Product> productList : products.values()) {
+            for (Product product : productList) {
+                total += product.getPrice();
+            }
         }
         return total;
     }
 
     public void printContents() {
-        if (items.isEmpty()) {
+        if (products.isEmpty()) {
             System.out.println("В корзине пусто.");
             return;
         }
 
-        for (Product product : items) {
-            System.out.println(product.getProductName() + ": " + product.getPrice());
+        List<String> sortedKeys = new ArrayList<>(products.keySet());
+        Collections.sort(sortedKeys);
+
+        for (String name : sortedKeys) {
+            List<Product> productList = products.get(name);
+            for (Product product : productList) {
+                System.out.println(product.getProductName() + ": " + product.getPrice());
+            }
         }
         System.out.println("Итого: " + getTotalCost());
     }
 
     public boolean hasProduct(String productName) {
-        for (Product product : items) {
-            if (product.getProductName().equals(productName)) {
-                return true;
-            }
-        }
-        return false;
+        return products.containsKey(productName);
     }
 
     public void clear() {
-        items.clear();
+        products.clear();
     }
 }
