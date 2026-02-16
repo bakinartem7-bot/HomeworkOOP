@@ -13,6 +13,10 @@ public class DiscountedProduct extends Product {
         if (discountPercent < 0 || discountPercent > 100) {
             throw new IllegalArgumentException("Процент скидки должен быть в диапазоне [0, 100] (получено: " + discountPercent + "%)");
         }
+    private final int discountPercent;
+
+    public DiscountedProduct(String productName, int basePrice, int discountPercent) {
+        super(productName);
         this.basePrice = basePrice;
         this.discountPercent = discountPercent;
     }
@@ -20,10 +24,18 @@ public class DiscountedProduct extends Product {
     @Override
     public int getPrice() {
         return (int) (basePrice * (1 - discountPercent / 100));
+    int getPrice() {
+        return basePrice * (100 - discountPercent) / 100;
+    }
+
+    @Override
+    boolean isSpecial() {
+        return true;
     }
 
     @Override
     public String toString() {
         return getProductName() + ": " + getPrice() + " (" + (int)discountPercent + " %)";
+        return getProductName() + ": " + getPrice() + " (" + discountPercent + " %)";
     }
 }
