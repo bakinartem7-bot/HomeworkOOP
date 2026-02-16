@@ -1,17 +1,24 @@
 package org.skypro.skyshop;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SearchEngine {
-    private final List<Searchable> searchables = new ArrayList<>();
+    private final Set<Searchable> searchables = new HashSet<>();
 
     public void add(Searchable searchable) {
         searchables.add(searchable);
     }
 
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new ArrayList<>();
+    public Set<Searchable> search(String query) {
+        Comparator<Searchable> comparator = (a, b) -> {
+            int lenDiff = Integer.compare(b.getName().length(), a.getName().length());
+            if (lenDiff != 0) {
+                return lenDiff;
+            }
+            return a.getName().compareTo(b.getName());
+        };
+
+        Set<Searchable> results = new TreeSet<>(comparator);
 
         for (Searchable item : searchables) {
             if (item.getSearchTerm().contains(query)) {

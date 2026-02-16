@@ -1,7 +1,6 @@
 package org.skypro.skyshop;
 
-import java.util.List;
-
+import java.util.*;
 
 public class App {
     public static void main(String[] args) {
@@ -11,7 +10,6 @@ public class App {
         Product pear = new FixPriceProduct("Груша");
         Product strawberry = new SimpleProduct("Клубника", 120);
         Product water = new DiscountedProduct("Вода", 50, 10);
-
 
         Article article1 = new Article("Как выбрать яблоки", "Советы по выбору лучших яблок.");
         Article article2 = new Article("Польза бананов", "Бананы содержат калий и витамины.");
@@ -28,7 +26,6 @@ public class App {
 
         System.out.println("=== 2. Удаление продукта 'Банан' из корзины ===");
         List<Product> removedBananas = basket.removeProductsByName("Банан");
-
 
         if (!removedBananas.isEmpty()) {
             System.out.println("Удалённые продукты:");
@@ -57,7 +54,7 @@ public class App {
         System.out.println("Содержимое корзины:");
         basket.printContents();
 
-        System.out.println("=== 4. Поиск в SearchEngine ===");
+        System.out.println("=== 4. Поиск в SearchEngine (результаты отсортированы по длине имени) ===");
         SearchEngine searchEngine = new SearchEngine();
 
         searchEngine.add(apple);
@@ -71,11 +68,9 @@ public class App {
 
         String[] queries = {"яблок", "банан", "клубник", "вода", "секрет"};
 
-
         for (String query : queries) {
             System.out.println("--- Поиск по запросу '" + query + "':");
-            List<Searchable> results = searchEngine.search(query);
-
+            Set<Searchable> results = searchEngine.search(query);
 
             if (results.isEmpty()) {
                 System.out.println("Ничего не найдено.");
@@ -89,7 +84,6 @@ public class App {
         System.out.println("=== 5. Поиск лучшего совпадения ===");
 
         String[] bestMatchQueries = {"красные", "экзотический", ""};
-
 
         for (String search : bestMatchQueries) {
             try {
