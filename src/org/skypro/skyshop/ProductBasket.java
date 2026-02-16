@@ -1,16 +1,19 @@
 package org.skypro.skyshop;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ProductBasket {
-    private final List<Product> items = new LinkedList<>();
+
+    private final Map<String, List<Product>> products = new HashMap<>();
 
     public void addProduct(Product product) {
-        items.add(product);
+        products.computeIfAbsent(product.getProductName(), k -> new ArrayList<>())
+                .add(product);
     }
 
     public List<Product> removeProductsByName(String name) {
+        List<Product> removed = products.remove(name);
+        return removed != null ? removed : Collections.emptyList();
         List<Product> removed = new LinkedList<>();
 
         // Используем Iterator для безопасного удаления во время обхода
@@ -36,6 +39,10 @@ public class ProductBasket {
 
     public int getTotalCost() {
         int total = 0;
+        for (List<Product> productList : products.values()) {
+            for (Product product : productList) {
+                total += product.getPrice();
+            }
         for (Product product : items) {
             total += product.getPrice();
         for (int i = 0; i < count; i++) {
@@ -45,6 +52,7 @@ public class ProductBasket {
     }
 
     public void printContents() {
+        if (products.isEmpty()) {
         if (items.isEmpty()) {
         int specialCount = 0;
 
@@ -60,14 +68,21 @@ public class ProductBasket {
             }
         }
 
-        for (Product product : items) {
-            System.out.println(product.getProductName() + ": " + product.getPrice());
+        List<String> sortedKeys = new ArrayList<>(products.keySet());
+        Collections.sort(sortedKeys);
+
+        for (String name : sortedKeys) {
+            List<Product> productList = products.get(name);
+            for (Product product : productList) {
+                System.out.println(product.getProductName() + ": " + product.getPrice());
+            }
         }
         System.out.println("Итого: " + getTotalCost());
         System.out.println("Специальных товаров: " + specialCount);
     }
 
     public boolean hasProduct(String productName) {
+        return products.containsKey(productName);
         for (Product product : items) {
             if (product.getProductName().equals(productName)) {
         for (int i = 0; i < count; i++) {
@@ -79,6 +94,6 @@ public class ProductBasket {
     }
 
     public void clear() {
-        items.clear();
+        products.clear();
     }
 }
