@@ -7,11 +7,20 @@ public abstract class Product implements Searchable {
     protected int price;
 
     public Product(String productName, int price) {
+    public Product(String productName) {
+        if (productName == null || productName.isBlank()) {
+            throw new IllegalArgumentException("Название продукта не может быть null или пустым (включая пробелы)");
+        }
+public abstract class Product {
+    private final String productName;
+
+    Product(String productName) {
         this.productName = productName;
         this.price = price;
     }
 
     public String getProductName() {
+    String getProductName() {
         return productName;
     }
 

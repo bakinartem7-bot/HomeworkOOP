@@ -1,9 +1,42 @@
 package org.skypro.skyshop;
 
 import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class App {
     public static void main(String[] args) {
+        try {
+            Product invalidName = new SimpleProduct("   ", 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    public static void main (String[] args) {
+        Product apple = new SimpleProduct("Яблоко", 150);
+        Product banana = new DiscountedProduct("Банан", 200, 25);
+        Product pear = new FixPriceProduct("Груша");
+        Product strawberry = new SimpleProduct("Клубника", 120);
+        Product water = new DiscountedProduct("Вода", 50, 10);
+
+        try {
+            Product zeroPrice = new SimpleProduct("Яблоко", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Product negativeDiscount = new DiscountedProduct("Банан", 200, -5);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Product overDiscount = new DiscountedProduct("Груша", 150, 110);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        System.out.println("\n=== 2. Создание корректных объектов ===\n");
 
         Product apple = new SimpleProduct("Яблоко", 150);
         Product banana = new DiscountedProduct("Банан", 200, 25);
@@ -24,7 +57,7 @@ public class App {
         basket.addProduct(water);
         basket.printContents();
 
-        System.out.println("=== 2. Удаление продукта 'Банан' из корзины ===");
+        System.out.println("\n=== 2. Удаление продукта 'Банан' из корзины ===");
         List<Product> removedBananas = basket.removeProductsByName("Банан");
 
         if (!removedBananas.isEmpty()) {
@@ -36,7 +69,7 @@ public class App {
             System.out.println("Список пуст");
         }
 
-        System.out.println("Содержимое корзины после удаления:");
+        System.out.println("\nСодержимое корзины после удаления:");
         basket.printContents();
 
         System.out.println("=== 3. Удаление продукта 'Манго' (не существует) ===");
@@ -55,8 +88,10 @@ public class App {
         basket.printContents();
 
         System.out.println("=== 4. Поиск в SearchEngine (результаты отсортированы по длине имени) ===");
+        System.out.println("=== 4. Поиск в SearchEngine (результаты отсортированы по имени) ===");
         SearchEngine searchEngine = new SearchEngine();
 
+        // Добавляем все объекты в поисковый движок
         searchEngine.add(apple);
         searchEngine.add(banana);
         searchEngine.add(pear);
@@ -71,11 +106,12 @@ public class App {
         for (String query : queries) {
             System.out.println("--- Поиск по запросу '" + query + "':");
             Set<Searchable> results = searchEngine.search(query);
+            Map<String, Searchable> results = searchEngine.search(query);
 
             if (results.isEmpty()) {
                 System.out.println("Ничего не найдено.");
             } else {
-                for (Searchable item : results) {
+                for (Searchable item : results.values()) {
                     System.out.println("  • " + item.getStringRepresentation());
                 }
             }
@@ -93,5 +129,15 @@ public class App {
                 System.out.println("Ошибка поиска для запроса '" + search + "': " + e.getMessage());
             }
         }
+
+        basket.printContents();
+
+        System.out.println("Общая стоимость: " + basket.getTotalCost() + " руб.");
+        System.out.println("Есть ли яблоко в корзине? " + basket.hasProduct("Яблоко"));
+        System.out.println("Есть ли банан в корзине? " + basket.hasProduct("Банан"));
+
+        basket.clear();
+        basket.printContents();
+        System.out.println("Стоимость пустой корзины: " + basket.getTotalCost() + " руб.");
     }
 }

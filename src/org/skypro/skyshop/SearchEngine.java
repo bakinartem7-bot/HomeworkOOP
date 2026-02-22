@@ -1,5 +1,6 @@
 package org.skypro.skyshop;
 
+
 import java.util.*;
 
 public class SearchEngine {
@@ -19,10 +20,12 @@ public class SearchEngine {
         };
 
         Set<Searchable> results = new TreeSet<>(comparator);
+    public Map<String, Searchable> search(String query) {
+        Map<String, Searchable> results = new TreeMap<>(); // TreeMap сортирует по ключу
 
         for (Searchable item : searchables) {
             if (item.getSearchTerm().contains(query)) {
-                results.add(item);
+                results.put(item.getName(), item);
             }
         }
 
