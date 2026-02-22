@@ -1,5 +1,6 @@
 package org.skypro.skyshop;
 
+import java.util.*;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +87,7 @@ public class App {
         System.out.println("Содержимое корзины:");
         basket.printContents();
 
+        System.out.println("=== 4. Поиск в SearchEngine (результаты отсортированы по длине имени) ===");
         System.out.println("=== 4. Поиск в SearchEngine (результаты отсортированы по имени) ===");
         SearchEngine searchEngine = new SearchEngine();
 
@@ -103,6 +105,7 @@ public class App {
 
         for (String query : queries) {
             System.out.println("--- Поиск по запросу '" + query + "':");
+            Set<Searchable> results = searchEngine.search(query);
             Map<String, Searchable> results = searchEngine.search(query);
 
             if (results.isEmpty()) {

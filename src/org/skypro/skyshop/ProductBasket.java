@@ -74,6 +74,7 @@ public class ProductBasket {
         for (String name : sortedKeys) {
             List<Product> productList = products.get(name);
             for (Product product : productList) {
+                System.out.println(product.getStringRepresentation());
                 System.out.println(product.getProductName() + ": " + product.getPrice());
             }
         }

@@ -1,6 +1,8 @@
 package org.skypro.skyshop;
 
 public class SimpleProduct extends Product {
+    public SimpleProduct(String name, int price) {
+        super(name, price);
     private final int price;
 
     public SimpleProduct(String productName, int price) {

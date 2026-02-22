@@ -1,9 +1,10 @@
 package org.skypro.skyshop;
 
 public class DiscountedProduct extends Product {
-    private final int basePrice;
-    private final double discountPercent;
+    private final int discountPercent;
 
+    public DiscountedProduct(String name, int price, int discountPercent) {
+        super(name, price);
     public DiscountedProduct(String productName, int basePrice, double discountPercent) {
         super(productName);
         if (basePrice <= 0) {
@@ -22,6 +23,9 @@ public class DiscountedProduct extends Product {
     }
 
     @Override
+    public String getStringRepresentation() {
+        int discountedPrice = price - (price * discountPercent / 100);
+        return productName + " (скидка " + discountPercent + "%) : " + discountedPrice + " руб.";
     public int getPrice() {
         return (int) (basePrice * (1 - discountPercent / 100));
     int getPrice() {

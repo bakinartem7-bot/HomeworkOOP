@@ -7,12 +7,13 @@ public class FixPriceProduct extends Product {
         super(productName);
     }
 
-    @Override
-    public int getPrice() {
-        return 99;
+    public FixPriceProduct(String name) {
+        super(name, FIXED_PRICE);
     }
 
     @Override
+    public String getStringRepresentation() {
+        return productName + " : " + FIXED_PRICE + " руб. (фиксированная цена)";
     public String toString() {
         return getProductName() + ": Фиксированная цена " + getPrice();
     int getPrice() {

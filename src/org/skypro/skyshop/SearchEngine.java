@@ -4,12 +4,22 @@ package org.skypro.skyshop;
 import java.util.*;
 
 public class SearchEngine {
-    private final List<Searchable> searchables = new ArrayList<>();
+    private final Set<Searchable> searchables = new HashSet<>();
 
     public void add(Searchable searchable) {
         searchables.add(searchable);
     }
 
+    public Set<Searchable> search(String query) {
+        Comparator<Searchable> comparator = (a, b) -> {
+            int lenDiff = Integer.compare(b.getName().length(), a.getName().length());
+            if (lenDiff != 0) {
+                return lenDiff;
+            }
+            return a.getName().compareTo(b.getName());
+        };
+
+        Set<Searchable> results = new TreeSet<>(comparator);
     public Map<String, Searchable> search(String query) {
         Map<String, Searchable> results = new TreeMap<>(); // TreeMap сортирует по ключу
 
