@@ -1,7 +1,7 @@
 package org.skypro.skyshop;
 
 import java.util.List;
-
+import java.util.Set;
 
 public class App {
     public static void main(String[] args) {
@@ -74,7 +74,7 @@ public class App {
 
         for (String query : queries) {
             System.out.println("--- Поиск по запросу '" + query + "':");
-            List<Searchable> results = searchEngine.search(query);
+            Set<Searchable> results = searchEngine.search(query);
 
 
             if (results.isEmpty()) {

@@ -1,68 +1,94 @@
 package org.skypro.skyshop;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SearchEngine {
-    private final List<Searchable> searchables = new ArrayList<>();
+    private final Map<String, Set<Searchable>> index = new HashMap<>();
 
-    public void add(Searchable searchable) {
-        searchables.add(searchable);
+    public void add(Searchable item) {
+        String text = item.getStringRepresentation().toLowerCase();
+        String[] words = text.split("[\\s\\p{Punct}]+");
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                index.computeIfAbsent(word, k -> new TreeSet<>(
+                        Comparator.comparing(Searchable::getStringRepresentation)
+                )).add(item);
+            }
+        }
     }
 
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new ArrayList<>();
+    public Set<Searchable> search(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return Collections.emptySet();
+        }
 
-        for (Searchable item : searchables) {
-            if (item.getSearchTerm().contains(query)) {
-                results.add(item);
+        String[] keywords = query.toLowerCase().split("[\\s\\p{Punct}]+");
+        Set<Searchable> results = new TreeSet<>(getResultComparator());
+
+
+        for (String keyword : keywords) {
+            if (!keyword.isEmpty() && index.containsKey(keyword)) {
+                results.addAll(index.get(keyword));
             }
         }
 
         return results;
     }
 
-    public Searchable findBestMatch(String search) throws BestResultNotFound {
-        if (search == null || search.isBlank()) {
-            throw new BestResultNotFound("Поисковый запрос пуст или null: '" + search + "'");
+    public Searchable findBestMatch(String query) throws BestResultNotFound {
+        if (query == null || query.trim().isEmpty()) {
+            throw new BestResultNotFound("Пустой запрос не допускается");
         }
+        String[] keywords = query.toLowerCase().split("[\\s\\p{Punct}]+");
+        List<Searchable> candidates = new ArrayList<>();
 
-        Searchable bestMatch = null;
-        int maxOccurrences = 0;
+        Map<Searchable, Integer> matchCount = new HashMap<>();
 
-        for (Searchable item : searchables) {
-            String term = item.getSearchTerm();
-            int occurrences = countOccurrences(term, search);
-
-            if (occurrences > maxOccurrences) {
-                maxOccurrences = occurrences;
-                bestMatch = item;
+        for (String keyword : keywords) {
+            if (!keyword.isEmpty() && index.containsKey(keyword)) {
+                for (Searchable item : index.get(keyword)) {
+                    matchCount.put(item, matchCount.getOrDefault(item, 0) + 1);
+                    candidates.add(item);
+                }
             }
         }
 
-        if (bestMatch == null) {
-            throw new BestResultNotFound("Не найдено совпадений для запроса: '" + search + "'");
+        if (candidates.isEmpty()) {
+            throw new BestResultNotFound("Нет совпадений для запроса '" + query + "'");
         }
 
-        return bestMatch;
+        List<Searchable> perfectMatches = candidates.stream()
+                .filter(item -> matchCount.get(item) == keywords.length)
+                .collect(Collectors.toList());
+
+        if (!perfectMatches.isEmpty()) {
+            return perfectMatches.stream()
+                    .min(getResultComparator())
+                    .orElse(null);
+        }
+
+        return candidates.stream()
+                .max(Comparator.comparingInt(matchCount::get))
+                .orElse(null);
     }
 
-    private int countOccurrences(String text, String substring) {
-        if (text == null || substring == null || substring.isEmpty()) {
-            return 0;
-        }
+    private Comparator<Searchable> getResultComparator() {
+        return (a, b) -> {
+            int lenDiff = Integer.compare(b.getStringRepresentation().length(), a.getStringRepresentation().length());
+            if (lenDiff != 0) {
+                return lenDiff;
+            }
+            return a.getStringRepresentation().compareTo(b.getStringRepresentation());
+        };
+    }
 
-        int count = 0;
-        int index = 0;
-        int subLen = substring.length();
+    public void clear() {
+        index.clear();
+    }
 
-        while (true) {
-            int nextIndex = text.indexOf(substring, index);
-            if (nextIndex == -1) break;
-            count++;
-            index = nextIndex + subLen;
-        }
-
-        return count;
+    public int getIndexSize() {
+        return index.size();
     }
 }

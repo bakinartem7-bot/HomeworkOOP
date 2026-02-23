@@ -1,61 +1,63 @@
 package org.skypro.skyshop;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProductBasket {
-    private final List<Product> items = new LinkedList<>();
+    private final Map<String, List<Product>> products = new HashMap<>();
 
     public void addProduct(Product product) {
-        items.add(product);
+        products.computeIfAbsent(product.getProductName(), k -> new ArrayList<>())
+                .add(product);
     }
 
     public List<Product> removeProductsByName(String name) {
-        List<Product> removed = new LinkedList<>();
-
-        // Используем Iterator для безопасного удаления во время обхода
-        var iterator = items.iterator();
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getProductName().equals(name)) {
-                iterator.remove();
-                removed.add(product);
-            }
-        }
-
-        return removed;
+        List<Product> removed = products.remove(name);
+        return removed != null ? removed : Collections.emptyList();
     }
 
     public int getTotalCost() {
-        int total = 0;
-        for (Product product : items) {
-            total += product.getPrice();
-        }
-        return total;
+        return products.values().stream()
+                .flatMap(Collection::stream)
+                .mapToInt(Product::getPrice)
+                .sum();
     }
 
     public void printContents() {
-        if (items.isEmpty()) {
+        if (products.isEmpty()) {
             System.out.println("В корзине пусто.");
             return;
         }
 
-        for (Product product : items) {
-            System.out.println(product.getProductName() + ": " + product.getPrice());
-        }
+        products.values().stream()
+                .flatMap(Collection::stream)
+                .sorted(Comparator
+                        .comparing(Product::getProductName)
+                        .thenComparingInt(Product::getPrice))
+                .forEach(product -> {
+                    String repr = product.getStringRepresentation();
+                    System.out.println(repr != null ? repr : "Неизвестный продукт");
+                });
+
         System.out.println("Итого: " + getTotalCost());
     }
 
     public boolean hasProduct(String productName) {
-        for (Product product : items) {
-            if (product.getProductName().equals(productName)) {
-                return true;
-            }
-        }
-        return false;
+        return products.containsKey(productName);
     }
 
     public void clear() {
-        items.clear();
+        products.clear();
+    }
+
+    private long getSpecialCount() {
+        return products.values().stream()
+                .flatMap(Collection::stream)
+                .filter(this::isSpecialProduct)
+                .count();
+    }
+
+    private boolean isSpecialProduct(Product product) {
+        return product.getPrice() > 100;
     }
 }
