@@ -1,27 +1,32 @@
 package org.skypro.skyshop;
 
+
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SearchEngine {
-    private final Map<String, Set<Searchable>> index = new HashMap<>();
+    private final Set<Searchable> searchables = new HashSet<>();
 
-    public void add(Searchable item) {
-        String text = item.getStringRepresentation().toLowerCase();
-        String[] words = text.split("[\\s\\p{Punct}]+");
-
-        Arrays.stream(words)
-                .filter(word -> !word.isEmpty())
-                .forEach(word ->
-                        index.computeIfAbsent(word, k -> new TreeSet<>(
-                                Comparator.comparing(Searchable::getStringRepresentation)
-                        )).add(item)
-                );
+    public void add(Searchable searchable) {
+        searchables.add(searchable);
     }
 
     public Set<Searchable> search(String query) {
-        if (query == null || query.trim().isEmpty()) {
-            throw new IllegalArgumentException("Поисковый запрос не может быть null или пустым");
+        Comparator<Searchable> comparator = (a, b) -> {
+            int lenDiff = Integer.compare(b.getName().length(), a.getName().length());
+            if (lenDiff != 0) {
+                return lenDiff;
+            }
+            return a.getName().compareTo(b.getName());
+        };
+
+        Set<Searchable> results = new TreeSet<>(comparator);
+    public Map<String, Searchable> search(String query) {
+        Map<String, Searchable> results = new TreeMap<>(); // TreeMap сортирует по ключу
+
+        for (Searchable item : searchables) {
+            if (item.getSearchTerm().contains(query)) {
+                results.put(item.getName(), item);
+            }
         }
 
         String[] keywords = query.toLowerCase().split("[\\s\\p{Punct}]+");

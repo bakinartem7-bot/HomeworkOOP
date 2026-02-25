@@ -1,6 +1,8 @@
 package org.skypro.skyshop;
 
 public class SimpleProduct extends Product {
+    public SimpleProduct(String name, int price) {
+        super(name, price);
     private final int price;
 
     public SimpleProduct(String productName, int price) {
@@ -16,6 +18,9 @@ public class SimpleProduct extends Product {
         return price;
     }
 
+    int getPrice() {
+        return price;
+    }
     @Override
     public String toString() {
         return getProductName() + ": " + getPrice();
