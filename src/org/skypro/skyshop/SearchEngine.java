@@ -29,50 +29,68 @@ public class SearchEngine {
             }
         }
 
-        return results;
+        String[] keywords = query.toLowerCase().split("[\\s\\p{Punct}]+");
+
+        return Arrays.stream(keywords)
+                .filter(keyword -> !keyword.isEmpty())
+                .filter(index::containsKey)
+                .flatMap(keyword -> index.get(keyword).stream())
+                .collect(Collectors.toCollection(
+                        () -> new TreeSet<>(getResultComparator())
+                ));
     }
 
-    public Searchable findBestMatch(String search) throws BestResultNotFound {
-        if (search == null || search.isBlank()) {
-            throw new BestResultNotFound("Поисковый запрос пуст или null: '" + search + "'");
+    public Searchable findBestMatch(String query) throws BestResultNotFound {
+        if (query == null || query.trim().isEmpty()) {
+            throw new BestResultNotFound("Пустой запрос не допускается");
         }
 
-        Searchable bestMatch = null;
-        int maxOccurrences = 0;
+        Set<Searchable> candidates = search(query);
 
-        for (Searchable item : searchables) {
-            String term = item.getSearchTerm();
-            int occurrences = countOccurrences(term, search);
-
-            if (occurrences > maxOccurrences) {
-                maxOccurrences = occurrences;
-                bestMatch = item;
-            }
+        if (candidates.isEmpty()) {
+            throw new BestResultNotFound("Нет совпадений для запроса '" + query + "'");
         }
 
-        if (bestMatch == null) {
-            throw new BestResultNotFound("Не найдено совпадений для запроса: '" + search + "'");
+        List<Searchable> perfectMatches = candidates.stream()
+                .filter(item -> {
+                    String repr = item.getStringRepresentation().toLowerCase();
+                    return Arrays.stream(query.toLowerCase().split("[\\s\\p{Punct}]+"))
+                            .allMatch(repr::contains);
+                })
+                .toList();
+
+        if (!perfectMatches.isEmpty()) {
+            return perfectMatches.stream()
+                    .min(getResultComparator())
+                    .orElse(null);
         }
 
-        return bestMatch;
+        return candidates.stream()
+                .max(Comparator.comparingInt(item -> {
+                    String repr = item.getStringRepresentation().toLowerCase();
+                    return (int) Arrays.stream(query.toLowerCase().split("[\\s\\p{Punct}]+"))
+                            .filter(repr::contains)
+                            .count();
+                }))
+                .orElse(null);
     }
 
-    private int countOccurrences(String text, String substring) {
-        if (text == null || substring == null || substring.isEmpty()) {
-            return 0;
-        }
+    private Comparator<Searchable> getResultComparator() {
+        return (a, b) -> {
+            int lenDiff = Integer.compare(
+                    b.getStringRepresentation().length(),
+                    a.getStringRepresentation().length()
+            );
+            if (lenDiff != 0) return lenDiff;
+            return a.getStringRepresentation().compareTo(b.getStringRepresentation());
+        };
+    }
 
-        int count = 0;
-        int index = 0;
-        int subLen = substring.length();
+    public void clear() {
+        index.clear();
+    }
 
-        while (true) {
-            int nextIndex = text.indexOf(substring, index);
-            if (nextIndex == -1) break;
-            count++;
-            index = nextIndex + subLen;
-        }
-
-        return count;
+    public int getIndexSize() {
+        return index.size();
     }
 }
